@@ -15,9 +15,3 @@ interface Api {
     suspend fun login(@Header("Authorization") credentials: String?): Account
 
 }
-
-/**
- * Overloaded Login API extension function to handle authorization header encoding
- */
-suspend fun Api.login(username: String, password: String)
-        = login("Basic " + android.util.Base64.encodeToString("$username:$password".toByteArray(), android.util.Base64.NO_WRAP))
