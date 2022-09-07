@@ -1,5 +1,7 @@
 package life.league.challenge.kotlin.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +13,10 @@ class MainActivityViewModel(
         private val encodedCredentials: String
 ) : ViewModel() {
 
+    private val _uiState = MutableLiveData<UiState>(UiState.LoggedOut)
+    val uiState: LiveData<UiState>
+        get() = _uiState
+
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -21,5 +27,8 @@ class MainActivityViewModel(
         }
     }
 
-
+    sealed class UiState {
+        object LoggedIn : UiState()
+        object LoggedOut : UiState()
+    }
 }
