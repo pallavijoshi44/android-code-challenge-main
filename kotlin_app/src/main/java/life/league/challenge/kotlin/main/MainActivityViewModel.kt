@@ -4,30 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 import life.league.challenge.kotlin.api.HttpLoginRepository
-import kotlin.coroutines.CoroutineContext
 
 class MainActivityViewModel(
         private val repository: HttpLoginRepository,
         private val encodedCredentials: String,
-        private val coroutineContext: CoroutineContext = Dispatchers.IO) : ViewModel() {
+        coroutineContext: AppDispatchers = AppDispatchers()) : ViewModel() {
 
     private val _uiState = MutableLiveData<UiState>(UiState.LoggedOut)
     val uiState: LiveData<UiState>
         get() = _uiState
 
-    private val coroutineScope = viewModelScope + coroutineContext
+     private val coroutineScope = viewModelScope + coroutineContext.IO
 
     init {
         coroutineScope.launch {
             try {
-                repository.login(encodedCredentials)
+                val x = withContext(coroutineContext.IO) { repository.login(encodedCredentials) }
                 _uiState.value = UiState.LoggedIn
             } catch (t: Throwable) {
-                //   _uiState.value = UiState.Error
+                _uiState.value = UiState.Error
             }
         }
     }
