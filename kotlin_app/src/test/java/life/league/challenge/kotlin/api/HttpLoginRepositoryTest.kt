@@ -6,7 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import life.league.challenge.kotlin.model.Account
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class HttpLoginRepositoryTest {
 
