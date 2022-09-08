@@ -1,5 +1,6 @@
 package life.league.challenge.kotlin.api
 
+import arrow.core.right
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -11,9 +12,9 @@ import org.junit.jupiter.api.Test
 
 class HttpLoginRepositoryTest {
 
-    val anAccount = Account("apiKey")
-    val api = mockk<Api>()
-    val repository = HttpLoginRepository(api)
+    private val anAccount = Account("apiKey")
+    private val api = mockk<Api>()
+    private val repository = HttpLoginRepository(api)
 
     @Test
     fun shouldCallApi_whenLoginCalled() = runBlocking {
@@ -30,7 +31,7 @@ class HttpLoginRepositoryTest {
 
         val result = repository.login("credentials")
 
-        assertThat(result, `is`(anAccount))
+        assertThat(result, `is`(anAccount.right()))
 
     }
 

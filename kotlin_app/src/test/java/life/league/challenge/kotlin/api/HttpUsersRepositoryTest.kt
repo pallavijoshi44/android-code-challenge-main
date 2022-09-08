@@ -1,5 +1,6 @@
 package life.league.challenge.kotlin.api
 
+import arrow.core.right
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -29,7 +30,7 @@ class HttpUsersRepositoryTest {
     @Test
     fun shouldCallUserApi_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
-        coEvery { loginRepository.login(any()) } returns Account(credentials)
+        coEvery { loginRepository.login(any()) } returns Account(credentials).right()
         coEvery { api.fetchUserPosts(any()) } returns listOf(aPost)
 
         repository.fetchUserDetails(credentials)
@@ -40,7 +41,7 @@ class HttpUsersRepositoryTest {
     @Test
     fun shouldCallPostsApi_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
-        coEvery { loginRepository.login(any()) } returns Account(credentials)
+        coEvery { loginRepository.login(any()) } returns Account(credentials).right()
         coEvery { api.fetchUserPosts(any()) } returns listOf(aPost)
 
         repository.fetchUserDetails(credentials)
@@ -52,11 +53,11 @@ class HttpUsersRepositoryTest {
     fun shouldReturnListOfUsers_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
         coEvery { api.fetchUserPosts(any()) } returns listOf(aPost)
-        coEvery { loginRepository.login(any()) } returns Account(credentials)
+        coEvery { loginRepository.login(any()) } returns Account(credentials).right()
 
         val result = repository.fetchUserDetails(credentials)
 
         val expectedListOfUserDetails = listOf(UserDetails(avatar, username, title, description))
-        assertThat(result, `is`(expectedListOfUserDetails))
+        assertThat(result, `is`(expectedListOfUserDetails.right()))
     }
 }

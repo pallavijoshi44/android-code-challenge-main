@@ -1,5 +1,7 @@
 package life.league.challenge.kotlin.api
 
+import arrow.core.Either
+import arrow.core.computations.ResultEffect.bind
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import life.league.challenge.kotlin.model.Post
@@ -11,9 +13,10 @@ class HttpUsersRepository(
     private val api: Api
 ) {
 
-    suspend fun fetchUserDetails(credentials: String): List<UserDetails> {
-        val users = fetchUsers(credentials)
-        val posts = fetchPosts(credentials)
+    suspend fun fetchUserDetails(credentials: String) = Either.catch {
+        val account = httpLoginRepository.login(credentials).bind()
+        val users = fetchUsers(account.apiKey).bind()
+        val posts = fetchPosts(account.apiKey).bind()
         val userDetails: List<UserDetails> = posts.map { post ->
             val user: User? = users.find { user -> user.id == post.userId }
             UserDetails(
@@ -23,18 +26,19 @@ class HttpUsersRepository(
                 post.description
             )
         }
-        return userDetails
+        userDetails
     }
 
-    private suspend fun fetchUsers(credentials: String): List<User> =
+    private suspend fun fetchUsers(apiKey: String?): Either<Throwable, List<User>> = Either.catch {
         withContext(Dispatchers.IO) {
-            val account = httpLoginRepository.login(credentials)
-            api.fetchUsers(account.apiKey)
+            api.fetchUsers(apiKey)
         }
+    }
 
-    private suspend fun fetchPosts(credentials: String): List<Post> =
-        withContext(Dispatchers.IO) {
-            val account = httpLoginRepository.login(credentials)
-            api.fetchUserPosts(account.apiKey)
+    private suspend fun fetchPosts(apiKey: String?): Either<Throwable, List<Post>> =
+        Either.catch {
+            withContext(Dispatchers.IO) {
+                api.fetchUserPosts(apiKey)
+            }
         }
 }

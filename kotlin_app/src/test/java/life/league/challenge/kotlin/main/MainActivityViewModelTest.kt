@@ -1,6 +1,8 @@
 package life.league.challenge.kotlin.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import arrow.core.left
+import arrow.core.right
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -43,7 +45,7 @@ class MainActivityViewModelTest {
 
         val userList = listOf(UserDetails("avatar", "userName", "title", "description"))
         val repository = mockk<HttpUsersRepository> {
-            coEvery { fetchUserDetails(any()) } returns userList
+            coEvery { fetchUserDetails(any()) } returns userList.right()
         }
 
         val viewModel = MainActivityViewModel(repository, encodedCredentials)
@@ -58,7 +60,7 @@ class MainActivityViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         val repository = mockk<HttpUsersRepository> {
-            coEvery { fetchUserDetails(any()) } throws RuntimeException()
+            coEvery { fetchUserDetails(any()) } returns  RuntimeException().left()
         }
 
         val viewModel = MainActivityViewModel(repository, encodedCredentials)
