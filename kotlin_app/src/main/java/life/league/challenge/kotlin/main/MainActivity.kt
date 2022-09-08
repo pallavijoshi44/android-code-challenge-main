@@ -9,7 +9,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import life.league.challenge.kotlin.main.composable.UserList
+import life.league.challenge.kotlin.main.composable.MainScreen
 import life.league.challenge.kotlin.main.theme.AppTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    UserList(uiState)
+                    MainScreen(uiState)
                 }
             }
         }
