@@ -7,6 +7,9 @@ import kotlinx.coroutines.runBlocking
 import life.league.challenge.kotlin.model.Account
 import life.league.challenge.kotlin.model.Post
 import life.league.challenge.kotlin.model.User
+import life.league.challenge.kotlin.model.UserDetails
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 
 class HttpUsersRepositoryTest {
@@ -14,28 +17,46 @@ class HttpUsersRepositoryTest {
     private val loginRepository = mockk<HttpLoginRepository>()
     private val api = mockk<Api>()
     private val repository = HttpUsersRepository(loginRepository, api)
+    private val credentials = "credentials"
+    private val userId = 1
+    private val avatar = "avatar"
+    private val username = "userName"
+    private val aUser = User(userId, avatar, username)
+    private val title = "title"
+    private val description = "description"
+    private val aPost = Post(userId, title, description)
 
     @Test
-    fun shouldCallUserApi_whenUserDetailsAreFetched() = runBlocking {
-        val aUser = User()
-        val credentials = "credentials"
+    fun shouldCallUserApi_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
         coEvery { loginRepository.login(any()) } returns Account(credentials)
+        coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
 
-        repository.fetchUsers(credentials)
+        repository.fetchUserDetails(credentials)
 
         coVerify { api.fetchUsers(credentials) }
     }
 
     @Test
-    fun shouldCallPostsApi_whenFetchPostsCalled() = runBlocking {
-        val post = Post(1, "title", "String")
-        val credentials = "credentials"
-        coEvery { api.fetchUserPosts(any()) } returns listOf(post)
+    fun shouldCallPostsApi_whenFetchUserDetailsCalled() = runBlocking {
+        coEvery { api.fetchUsers(any()) } returns listOf(aUser)
+        coEvery { loginRepository.login(any()) } returns Account(credentials)
+        coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
+
+        repository.fetchUserDetails(credentials)
+
+        coVerify { api.fetchUserPosts(credentials, userId) }
+    }
+
+    @Test
+    fun shouldReturnListOfUsers_whenFetchUserDetailsCalled() = runBlocking {
+        coEvery { api.fetchUsers(any()) } returns listOf(aUser)
+        coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
         coEvery { loginRepository.login(any()) } returns Account(credentials)
 
-        repository.fetchPosts(credentials)
+        val result = repository.fetchUserDetails(credentials)
 
-        coVerify { api.fetchUserPosts(credentials) }
+        val expectedListOfUserDetails = listOf(UserDetails(avatar, username, title, description))
+        assertThat(result, `is`(expectedListOfUserDetails))
     }
 }

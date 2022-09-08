@@ -11,7 +11,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import life.league.challenge.kotlin.CoroutineTestRule
 import life.league.challenge.kotlin.api.HttpUsersRepository
-import life.league.challenge.kotlin.model.User
+import life.league.challenge.kotlin.model.UserDetails
 import org.junit.Rule
 import org.junit.jupiter.api.Test
 
@@ -33,21 +33,21 @@ class MainActivityViewModelTest {
 
     @Test
     fun shouldCallRepositoryToLogin_whenLoginCalled() = runBlocking {
-        val aUser = User("avatar", "name", "username", "email")
+        val aUserDetail = UserDetails("avatar", "name", "username", "email")
         val repository = mockk<HttpUsersRepository> {
-            coEvery { fetchUsers(any()) } returns aUser
+            coEvery { fetchUserDetails(any()) } returns listOf(aUserDetail)
         }
         val encodedCredentials = "credentials"
         MainActivityViewModel(repository, encodedCredentials, testDispatcher)
 
-        coVerify { repository.fetchUsers(encodedCredentials) }
+        coVerify { repository.fetchUserDetails(encodedCredentials) }
     }
 
     @Test
     fun shouldUpdateUIStateToLoggedIn_whenLoginIsSuccessful() = runBlocking {
-        val aUser = User("avatar", "name", "username", "email")
+        val aUserDetail = UserDetails("avatar", "name", "username", "email")
         val repository = mockk<HttpUsersRepository> {
-            coEvery { fetchUsers(any()) } returns aUser
+            coEvery { fetchUserDetails(any()) } returns listOf(aUserDetail)
         }
         val viewModel = MainActivityViewModel(repository, "credentials", testDispatcher)
 
@@ -58,7 +58,7 @@ class MainActivityViewModelTest {
     @Test
     fun shouldUpdateUIStateToError_whenLoginIsSuccessful() = runBlocking {
         val repository = mockk<HttpUsersRepository> {
-            coEvery { fetchUsers(any()) } throws RuntimeException()
+            coEvery { fetchUserDetails(any()) } throws RuntimeException()
         }
         val viewModel = MainActivityViewModel(repository, "credentials", testDispatcher)
 

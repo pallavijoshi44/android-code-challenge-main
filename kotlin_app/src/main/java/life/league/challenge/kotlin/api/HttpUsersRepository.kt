@@ -2,22 +2,40 @@ package life.league.challenge.kotlin.api
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import life.league.challenge.kotlin.model.Post
 import life.league.challenge.kotlin.model.User
+import life.league.challenge.kotlin.model.UserDetails
 
-class HttpUsersRepository(private val httpLoginRepository: HttpLoginRepository, private val api: Api) {
+class HttpUsersRepository(
+        private val httpLoginRepository: HttpLoginRepository,
+        private val api: Api) {
 
-    suspend fun fetchUsers(credentials: String): User {
-        withContext(Dispatchers.IO) {
-            val account = httpLoginRepository.login(credentials)
-            val userInfo = api.fetchUsers(account.apiKey)
+    suspend fun fetchUserDetails(credentials: String): List<UserDetails> {
+        val userDetails = mutableListOf<UserDetails>()
+        val users = fetchUsers(credentials)
+        users.forEach { user ->
+            val posts = fetchPosts(credentials, user.id)
+            posts.forEach { post ->
+                userDetails.add(UserDetails(user.avatar, user.username, post.title, post.description))
+            }
         }
-        return User()
+        return userDetails
     }
 
-    suspend fun fetchPosts(credentials: String): Unit {
-        withContext(Dispatchers.IO) {
+    private suspend fun fetchUsers(credentials: String): List<User> {
+        val userInfo = withContext(Dispatchers.IO) {
             val account = httpLoginRepository.login(credentials)
-            val posts = api.fetchUserPosts(account.apiKey)
+            api.fetchUsers(account.apiKey)
         }
+        return userInfo
     }
+
+    private suspend fun fetchPosts(credentials: String, id: Int): List<Post> {
+        val posts = withContext(Dispatchers.IO) {
+            val account = httpLoginRepository.login(credentials)
+            api.fetchUserPosts(account.apiKey, id)
+        }
+        return posts
+    }
+
 }

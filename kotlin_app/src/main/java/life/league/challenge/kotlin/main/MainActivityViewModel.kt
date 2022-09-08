@@ -21,7 +21,7 @@ class MainActivityViewModel(
     init {
         viewModelScope.launch(appDispatchers.IO) {
             try {
-                val x = repository.fetchUsers(encodedCredentials)
+                val x = repository.fetchUserDetails(encodedCredentials)
                 _uiState.value = UiState.LoggedIn
             } catch (t: Throwable) {
                 _uiState.value = UiState.Error

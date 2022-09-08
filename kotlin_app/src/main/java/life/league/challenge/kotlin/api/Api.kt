@@ -5,6 +5,7 @@ import life.league.challenge.kotlin.model.Post
 import life.league.challenge.kotlin.model.User
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Query
 
 /**
  * Retrofit API interface definition using coroutines. Feel free to change this implementation to
@@ -18,6 +19,6 @@ interface Api {
     @GET("users")
     suspend fun fetchUsers(@Header("x-access-token") accessToken: String?): List<User>
 
-    @GET("users")
-    suspend fun fetchUserPosts(@Header("x-access-token") accessToken: String?): List<Post>
+    @GET("posts")
+    suspend fun fetchUserPosts(@Header("x-access-token") accessToken: String?, @Query("userId") userId: Int): List<Post>
 }
