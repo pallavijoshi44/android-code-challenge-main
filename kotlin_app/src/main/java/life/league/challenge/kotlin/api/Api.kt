@@ -1,6 +1,7 @@
 package life.league.challenge.kotlin.api
 
 import life.league.challenge.kotlin.model.Account
+import life.league.challenge.kotlin.model.Post
 import life.league.challenge.kotlin.model.User
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -17,4 +18,6 @@ interface Api {
     @GET("users")
     suspend fun fetchUsers(@Header("x-access-token") accessToken: String?): List<User>
 
+    @GET("users")
+    suspend fun fetchUserPosts(@Header("x-access-token") accessToken: String?): List<Post>
 }

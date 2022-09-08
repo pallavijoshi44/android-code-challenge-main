@@ -10,7 +10,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import life.league.challenge.kotlin.CoroutineTestRule
-import life.league.challenge.kotlin.api.HttpLoginRepository
+import life.league.challenge.kotlin.api.HttpUsersRepository
+import life.league.challenge.kotlin.model.User
 import org.junit.Rule
 import org.junit.jupiter.api.Test
 
@@ -32,19 +33,21 @@ class MainActivityViewModelTest {
 
     @Test
     fun shouldCallRepositoryToLogin_whenLoginCalled() = runBlocking {
-        val repository = mockk<HttpLoginRepository> {
-            coEvery { login(any()) } returns Unit
+        val aUser = User("avatar", "name", "username", "email")
+        val repository = mockk<HttpUsersRepository> {
+            coEvery { fetchUsers(any()) } returns aUser
         }
         val encodedCredentials = "credentials"
-        val viewModel = MainActivityViewModel(repository, encodedCredentials, testDispatcher)
+        MainActivityViewModel(repository, encodedCredentials, testDispatcher)
 
-        coVerify { repository.login(encodedCredentials) }
+        coVerify { repository.fetchUsers(encodedCredentials) }
     }
 
     @Test
     fun shouldUpdateUIStateToLoggedIn_whenLoginIsSuccessful() = runBlocking {
-        val repository = mockk<HttpLoginRepository> {
-            coEvery { login(any()) } returns Unit
+        val aUser = User("avatar", "name", "username", "email")
+        val repository = mockk<HttpUsersRepository> {
+            coEvery { fetchUsers(any()) } returns aUser
         }
         val viewModel = MainActivityViewModel(repository, "credentials", testDispatcher)
 
@@ -54,8 +57,8 @@ class MainActivityViewModelTest {
     //TODO
     @Test
     fun shouldUpdateUIStateToError_whenLoginIsSuccessful() = runBlocking {
-        val repository = mockk<HttpLoginRepository> {
-            coEvery { login(any()) } throws RuntimeException()
+        val repository = mockk<HttpUsersRepository> {
+            coEvery { fetchUsers(any()) } throws RuntimeException()
         }
         val viewModel = MainActivityViewModel(repository, "credentials", testDispatcher)
 

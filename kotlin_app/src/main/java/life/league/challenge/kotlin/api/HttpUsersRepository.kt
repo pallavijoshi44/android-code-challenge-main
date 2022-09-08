@@ -13,4 +13,11 @@ class HttpUsersRepository(private val httpLoginRepository: HttpLoginRepository, 
         }
         return User()
     }
+
+    suspend fun fetchPosts(credentials: String): Unit {
+        withContext(Dispatchers.IO) {
+            val account = httpLoginRepository.login(credentials)
+            val posts = api.fetchUserPosts(account.apiKey)
+        }
+    }
 }
