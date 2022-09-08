@@ -1,5 +1,6 @@
 package life.league.challenge.kotlin.api
 
+import arrow.core.left
 import arrow.core.right
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -26,7 +27,7 @@ class HttpLoginRepositoryTest {
     }
 
     @Test
-    fun shouldReturnAccountWithApiKey_whenLoginCalled() = runBlocking {
+    fun shouldReturnAccountWithApiKey_whenLoginSuccessful() = runBlocking {
         coEvery { api.login(any()) } returns anAccount
 
         val result = repository.login("credentials")
@@ -34,5 +35,17 @@ class HttpLoginRepositoryTest {
         assertThat(result, `is`(anAccount.right()))
 
     }
+
+    @Test
+    fun shouldReturnThrowable_whenLoginFails() = runBlocking {
+        val exception = RuntimeException()
+        coEvery { api.login(any()) } throws exception
+
+        val result = repository.login("credentials")
+
+        assertThat(result, `is`(exception.left()))
+
+    }
+
 
 }
