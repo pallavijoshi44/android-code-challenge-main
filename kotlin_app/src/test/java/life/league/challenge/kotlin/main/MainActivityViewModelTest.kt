@@ -7,27 +7,14 @@ import io.mockk.mockk
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import life.league.challenge.kotlin.api.HttpUsersRepository
 import life.league.challenge.kotlin.model.UserDetails
 import org.junit.Rule
 import org.junit.jupiter.api.Test
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
 
-class MainDispatcherRule(
-    private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(),
-) : TestWatcher() {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun starting(description: Description) {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun finished(description: Description) {
-        Dispatchers.resetMain()
-    }
-}
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainActivityViewModelTest {
 
@@ -35,15 +22,13 @@ class MainActivityViewModelTest {
     @JvmField
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    private val encodedCredentials = "credentials"
 
     @Test
     fun shouldCallRepository_WhenViewModelIsInitialized() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val encodedCredentials = "credentials"
         val repository = mockk<HttpUsersRepository>()
 
         MainActivityViewModel(repository, encodedCredentials)
@@ -52,11 +37,10 @@ class MainActivityViewModelTest {
     }
 
     @Test
-    fun shouldUpdateUserDetailsLiveData_WhenViewModelIsInitialized() = runTest {
+    fun shouldUpdateUIState_To_Data_WhenRepositorySuccess() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val encodedCredentials = "credentials"
         val userList = listOf(UserDetails("avatar", "userName", "title", "description"))
         val repository = mockk<HttpUsersRepository> {
             coEvery { fetchUserDetails(any()) } returns userList
@@ -65,6 +49,21 @@ class MainActivityViewModelTest {
         val viewModel = MainActivityViewModel(repository, encodedCredentials)
 
         val expectedUIState = MainActivityViewModel.UIState.Data(userList)
+        assertEquals(expectedUIState, viewModel.uiState.value)
+    }
+
+    @Test
+    fun shouldUpdateUIState_To_Error_WhenRepositoryFails() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        val repository = mockk<HttpUsersRepository> {
+            coEvery { fetchUserDetails(any()) } throws RuntimeException()
+        }
+
+        val viewModel = MainActivityViewModel(repository, encodedCredentials)
+
+        val expectedUIState = MainActivityViewModel.UIState.Error
         assertEquals(expectedUIState, viewModel.uiState.value)
     }
 }

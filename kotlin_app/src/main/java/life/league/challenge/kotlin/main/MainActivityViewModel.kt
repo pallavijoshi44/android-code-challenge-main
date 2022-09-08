@@ -21,7 +21,7 @@ class MainActivityViewModel(
             try {
                 _uiState.value = UIState.Data(repository.fetchUserDetails(encodedCredentials))
             } catch (e: Exception) {
-
+                _uiState.value = UIState.Error
             }
         }
     }
@@ -29,5 +29,6 @@ class MainActivityViewModel(
     sealed class UIState {
         object Loading: UIState()
         data class Data(val userDetails: List<UserDetails>) : UIState()
+        object Error: UIState()
     }
 }

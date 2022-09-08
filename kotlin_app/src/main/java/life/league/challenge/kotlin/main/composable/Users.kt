@@ -46,6 +46,7 @@ fun UserList(viewModel: MainActivityViewModel) {
             }
         }
         MainActivityViewModel.UIState.Loading -> TODO()
+        MainActivityViewModel.UIState.Error -> TODO()
     }
 
 }
