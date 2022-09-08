@@ -22,7 +22,7 @@ class MainActivityViewModel(
         viewModelScope.launch(appDispatchers.IO) {
             try {
                 val x = repository.fetchUserDetails(encodedCredentials)
-                _uiState.value = UiState.LoggedIn
+                _uiState.value = UiState.UserDetails
             } catch (t: Throwable) {
                 t.printStackTrace()
                 _uiState.value = UiState.Error
@@ -31,7 +31,7 @@ class MainActivityViewModel(
     }
 
     sealed class UiState {
-        object LoggedIn : UiState()
+        object UserDetails : UiState()
         object LoggedOut : UiState()
         object Error : UiState()
     }
