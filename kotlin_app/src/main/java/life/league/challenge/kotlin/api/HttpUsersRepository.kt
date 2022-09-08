@@ -11,6 +11,8 @@ class HttpUsersRepository(
     private val api: Api
 ) {
 
+    private var userList: List<User>? = null
+
     suspend fun fetchUserDetails(credentials: String, id: Int): List<UserDetails> {
         val users = fetchUsers(credentials)
         val posts = fetchPosts(credentials, id)
@@ -27,11 +29,14 @@ class HttpUsersRepository(
     }
 
     private suspend fun fetchUsers(credentials: String): List<User> {
-        val userInfo = withContext(Dispatchers.IO) {
-            val account = httpLoginRepository.login(credentials)
-            api.fetchUsers(account.apiKey)
+        if (userList == null) {
+            val userInfo = withContext(Dispatchers.IO) {
+                val account = httpLoginRepository.login(credentials)
+                api.fetchUsers(account.apiKey)
+            }
+            userList = userInfo
         }
-        return userInfo
+        return userList ?: emptyList()
     }
 
     private suspend fun fetchPosts(credentials: String, id: Int): List<Post> {
