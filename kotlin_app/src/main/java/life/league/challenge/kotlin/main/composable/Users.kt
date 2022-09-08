@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
@@ -76,17 +77,15 @@ fun UserList(viewModel: MainActivityViewModel) {
 
 @Composable
 fun UserCard(user: UserDetails) {
-    Card(
-        elevation = 4.dp,
+    Column(
         modifier = Modifier
-            .padding(6.dp)
+            .padding(top = 12.dp, start = 8.dp)
             .fillMaxWidth()
-            .wrapContentHeight()
+            .wrapContentHeight(),
     ) {
+
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
@@ -98,8 +97,8 @@ fun UserCard(user: UserDetails) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .clip(CircleShape)
-                    .width(42.dp)
-                    .height(42.dp)
+                    .width(48.dp)
+                    .height(48.dp)
             )
             Text(
                 text = user.userName,
@@ -109,6 +108,21 @@ fun UserCard(user: UserDetails) {
                     .align(CenterVertically)
             )
         }
+        Text(
+            text = user.title,
+            fontSize = 18.sp,
+            modifier = Modifier
+                .padding(start = 12.dp, bottom = 5.dp, top = 5.dp)
+        )
+        user.description?.let {
+            Text(
+                text = it,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+            )
+        }
+        Divider(Modifier.padding(top = 12.dp, start = 12.dp))
     }
 }
 
