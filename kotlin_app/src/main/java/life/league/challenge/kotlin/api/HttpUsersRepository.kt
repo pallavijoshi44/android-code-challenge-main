@@ -20,7 +20,7 @@ class HttpUsersRepository(
         val userDetails: List<UserDetails> = posts.map { post ->
             UserDetails(
                 user?.avatar,
-                user?.username ?: "",
+                user?.name ?: "",
                 post.title,
                 post.description
             )
