@@ -13,6 +13,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import life.league.challenge.kotlin.api.HttpUsersRepository
+import life.league.challenge.kotlin.api.NoPostsFoundException
+import life.league.challenge.kotlin.main.MainActivityViewModel.Companion.ERROR_TEXT_MESSAGE
+import life.league.challenge.kotlin.main.MainActivityViewModel.Companion.NO_POST_FOUND_TEXT_MESSAGE
 import life.league.challenge.kotlin.model.UserDetails
 import org.junit.Rule
 import org.junit.jupiter.api.Test
@@ -60,12 +63,27 @@ class MainActivityViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         val repository = mockk<HttpUsersRepository> {
-            coEvery { fetchUserDetails(any()) } returns  RuntimeException().left()
+            coEvery { fetchUserDetails(any()) } returns RuntimeException().left()
         }
 
         val viewModel = MainActivityViewModel(repository, encodedCredentials)
 
-        val expectedUIState = MainActivityViewModel.UIState.Error
+        val expectedUIState = MainActivityViewModel.UIState.Error(ERROR_TEXT_MESSAGE)
+        assertEquals(expectedUIState, viewModel.uiState.value)
+    }
+
+    @Test
+    fun shouldUpdateUIState_To_Error_WhenRepositoryFails_NoPostException() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        val repository = mockk<HttpUsersRepository> {
+            coEvery { fetchUserDetails(any()) } returns NoPostsFoundException().left()
+        }
+
+        val viewModel = MainActivityViewModel(repository, encodedCredentials)
+
+        val expectedUIState = MainActivityViewModel.UIState.Error(NO_POST_FOUND_TEXT_MESSAGE)
         assertEquals(expectedUIState, viewModel.uiState.value)
     }
 }

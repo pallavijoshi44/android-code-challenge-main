@@ -8,13 +8,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-const val ERROR_TEXT_MESSAGE = "An Error occurred! Please try again later."
 
 @Composable
-fun ErrorScreen() {
+fun ErrorScreen(message: String) {
     Text(
         color = Color.Black,
-        text = ERROR_TEXT_MESSAGE,
+        text = message,
         fontSize = 16.sp,
         modifier = Modifier
             .padding(20.dp)
