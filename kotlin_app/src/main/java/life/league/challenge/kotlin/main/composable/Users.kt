@@ -10,6 +10,8 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -23,9 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import life.league.challenge.kotlin.R
@@ -36,42 +35,19 @@ import life.league.challenge.kotlin.model.UserDetails
 @Composable
 fun UserList(viewModel: MainActivityViewModel) {
 
-    val usersList = viewModel.usersPager.collectAsLazyPagingItems()
+    val uiState : MainActivityViewModel.UIState by viewModel.uiState.collectAsState()
 
-    LazyColumn {
-        items(usersList) { item ->
-            item?.let { UserCard(user = it) }
-        }
-
-        when (usersList.loadState.append) {
-            is LoadState.NotLoading -> Unit
-            LoadState.Loading -> {
-                item {
-                    LoadingItem()
-                }
-            }
-            is LoadState.Error -> {
-                item {
-                    ErrorItem(message = "Some error occurred")
-                }
+    when(uiState){
+        is MainActivityViewModel.UIState.Data -> {
+            val usersList = (uiState as MainActivityViewModel.UIState.Data).userDetails
+            LazyColumn {
+                items(usersList.size) { item ->
+                    UserCard(user = usersList[item]) }
             }
         }
-
-        when (usersList.loadState.refresh) {
-            is LoadState.NotLoading -> Unit
-            LoadState.Loading -> {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-            is LoadState.Error -> TODO()
-        }
+        MainActivityViewModel.UIState.Loading -> TODO()
     }
+
 }
 
 

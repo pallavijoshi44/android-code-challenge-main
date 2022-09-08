@@ -11,13 +11,11 @@ class HttpUsersRepository(
     private val api: Api
 ) {
 
-    private var userList: List<User>? = null
-
-    suspend fun fetchUserDetails(credentials: String, id: Int): List<UserDetails> {
+    suspend fun fetchUserDetails(credentials: String): List<UserDetails> {
         val users = fetchUsers(credentials)
-        val posts = fetchPosts(credentials, id)
-        val user: User? = users.find { user -> user.id == id }
+        val posts = fetchPosts(credentials)
         val userDetails: List<UserDetails> = posts.map { post ->
+            val user: User? = users.find { user -> user.id == post.userId }
             UserDetails(
                 user?.avatar,
                 user?.name ?: "",
@@ -28,23 +26,15 @@ class HttpUsersRepository(
         return userDetails
     }
 
-    private suspend fun fetchUsers(credentials: String): List<User> {
-        if (userList == null) {
-            val userInfo = withContext(Dispatchers.IO) {
-                val account = httpLoginRepository.login(credentials)
-                api.fetchUsers(account.apiKey)
-            }
-            userList = userInfo
-        }
-        return userList ?: emptyList()
-    }
-
-    private suspend fun fetchPosts(credentials: String, id: Int): List<Post> {
-        val posts = withContext(Dispatchers.IO) {
+    private suspend fun fetchUsers(credentials: String): List<User> =
+        withContext(Dispatchers.IO) {
             val account = httpLoginRepository.login(credentials)
-            api.fetchUserPosts(account.apiKey, id)
+            api.fetchUsers(account.apiKey)
         }
-        return posts
-    }
 
+    private suspend fun fetchPosts(credentials: String): List<Post> =
+        withContext(Dispatchers.IO) {
+            val account = httpLoginRepository.login(credentials)
+            api.fetchUserPosts(account.apiKey)
+        }
 }

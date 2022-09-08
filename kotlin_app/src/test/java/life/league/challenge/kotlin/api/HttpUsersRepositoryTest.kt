@@ -30,9 +30,9 @@ class HttpUsersRepositoryTest {
     fun shouldCallUserApi_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
         coEvery { loginRepository.login(any()) } returns Account(credentials)
-        coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
+        coEvery { api.fetchUserPosts(any()) } returns listOf(aPost)
 
-        repository.fetchUserDetails(credentials, userId)
+        repository.fetchUserDetails(credentials)
 
         coVerify { api.fetchUsers(credentials) }
     }
@@ -41,20 +41,20 @@ class HttpUsersRepositoryTest {
     fun shouldCallPostsApi_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
         coEvery { loginRepository.login(any()) } returns Account(credentials)
-        coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
+        coEvery { api.fetchUserPosts(any()) } returns listOf(aPost)
 
-        repository.fetchUserDetails(credentials, userId)
+        repository.fetchUserDetails(credentials)
 
-        coVerify { api.fetchUserPosts(credentials, userId) }
+        coVerify { api.fetchUserPosts(credentials) }
     }
 
     @Test
     fun shouldReturnListOfUsers_whenFetchUserDetailsCalled() = runBlocking {
         coEvery { api.fetchUsers(any()) } returns listOf(aUser)
-        coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
+        coEvery { api.fetchUserPosts(any()) } returns listOf(aPost)
         coEvery { loginRepository.login(any()) } returns Account(credentials)
 
-        val result = repository.fetchUserDetails(credentials, userId)
+        val result = repository.fetchUserDetails(credentials)
 
         val expectedListOfUserDetails = listOf(UserDetails(avatar, username, title, description))
         assertThat(result, `is`(expectedListOfUserDetails))

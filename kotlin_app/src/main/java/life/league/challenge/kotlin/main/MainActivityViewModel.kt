@@ -2,22 +2,32 @@ package life.league.challenge.kotlin.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import life.league.challenge.kotlin.api.HttpUsersRepository
+import life.league.challenge.kotlin.model.UserDetails
 
 class MainActivityViewModel(
     private val repository: HttpUsersRepository,
     private val encodedCredentials: String
 ) : ViewModel() {
 
-   // private val coroutineScope = viewModelScope + coroutineContext.IO
+    private val _uiState : MutableStateFlow<UIState> = MutableStateFlow<UIState>(UIState.Loading)
+    val uiState: StateFlow<UIState> get() = _uiState
 
-    val usersPager = Pager(
-        PagingConfig(pageSize = 10)
-    ) {
-        UserDetailsDataSource(repository, encodedCredentials)
-    }.flow.cachedIn(viewModelScope)
+    init {
+        viewModelScope.launch {
+            try {
+                _uiState.value = UIState.Data(repository.fetchUserDetails(encodedCredentials))
+            } catch (e: Exception) {
 
+            }
+        }
+    }
+
+    sealed class UIState {
+        object Loading: UIState()
+        data class Data(val userDetails: List<UserDetails>) : UIState()
+    }
 }
