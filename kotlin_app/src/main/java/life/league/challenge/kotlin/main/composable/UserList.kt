@@ -10,8 +10,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -20,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,29 +29,27 @@ import life.league.challenge.kotlin.R
 import life.league.challenge.kotlin.main.MainActivityViewModel
 import life.league.challenge.kotlin.model.UserDetails
 
-
 @Composable
-fun UserList(viewModel: MainActivityViewModel) {
-
-    val uiState : MainActivityViewModel.UIState by viewModel.uiState.collectAsState()
-
-    when(uiState){
+fun UserList(uiState: MainActivityViewModel.UIState) {
+    when (uiState) {
         is MainActivityViewModel.UIState.Data -> {
-            val usersList = (uiState as MainActivityViewModel.UIState.Data).userDetails
+            val usersList = uiState.userDetails
             LazyColumn {
                 items(usersList.size) { item ->
-                    UserCard(user = usersList[item]) }
+                    User(user = usersList[item])
+                }
             }
         }
-        MainActivityViewModel.UIState.Loading -> TODO()
+        MainActivityViewModel.UIState.Loading -> CircularProgressIndicator()
         MainActivityViewModel.UIState.Error -> TODO()
     }
 
 }
 
+const val AVATAR = "avatar_test_tag"
 
 @Composable
-fun UserCard(user: UserDetails) {
+fun User(user: UserDetails) {
     Column(
         modifier = Modifier
             .padding(top = 12.dp, start = 8.dp)
@@ -70,12 +66,13 @@ fun UserCard(user: UserDetails) {
                     .crossfade(true)
                     .build(),
                 placeholder = painterResource(R.drawable.ic_avatar_placeholder),
-                contentDescription = stringResource(R.string.description),
+                contentDescription = user.description,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .clip(CircleShape)
                     .width(48.dp)
                     .height(48.dp)
+                    .testTag(AVATAR)
             )
             Text(
                 text = user.userName,
@@ -162,5 +159,5 @@ fun ErrorItem(message: String) {
 @Preview
 @Composable
 fun UserPreview() {
-    UserCard(user = UserDetails("Belal", "username", "title", "null"))
+    User(user = UserDetails("Belal", "username", "title", "null"))
 }

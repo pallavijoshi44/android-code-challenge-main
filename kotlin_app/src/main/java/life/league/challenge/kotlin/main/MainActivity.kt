@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import life.league.challenge.kotlin.main.composable.UserList
 import life.league.challenge.kotlin.main.theme.AppTheme
@@ -26,13 +28,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val uiState: MainActivityViewModel.UIState by viewModel.uiState.collectAsState()
+
             AppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    UserList(viewModel = viewModel)
+                    UserList(uiState)
                 }
             }
         }
