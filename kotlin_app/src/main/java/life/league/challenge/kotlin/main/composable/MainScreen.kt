@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,33 +32,10 @@ fun MainScreen(uiState: MainActivityViewModel.UIState) {
                 }
             }
         }
-        MainActivityViewModel.UIState.Loading -> LoadingItem()
+        MainActivityViewModel.UIState.Loading -> LoadingDialog()
         MainActivityViewModel.UIState.Error -> TODO()
     }
 
-}
-
-const val AVATAR = "avatar_test_tag"
-
-
-
-@Composable
-fun LoadingItem() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        contentAlignment = Center
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .width(42.dp)
-                .height(42.dp)
-                .padding(8.dp),
-            strokeWidth = 5.dp
-        )
-
-    }
 }
 
 @Composable

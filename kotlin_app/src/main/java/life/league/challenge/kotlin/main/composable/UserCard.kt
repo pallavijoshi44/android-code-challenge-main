@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +42,6 @@ fun UserCard(user: UserDetails) {
                     .clip(CircleShape)
                     .width(48.dp)
                     .height(48.dp)
-                    .testTag(AVATAR)
             )
             Text(
                 text = user.userName,

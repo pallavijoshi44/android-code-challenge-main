@@ -3,7 +3,9 @@ package life.league.challenge.kotlin
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import life.league.challenge.kotlin.main.MainActivityViewModel
+import life.league.challenge.kotlin.main.composable.LOADING_DIALOG
 import life.league.challenge.kotlin.main.composable.MainScreen
 import life.league.challenge.kotlin.main.theme.AppTheme
 import life.league.challenge.kotlin.model.UserDetails
@@ -42,7 +44,7 @@ class MainScreenKtTest {
                     MainScreen(uiState = MainActivityViewModel.UIState.Loading)
                 }
             }
-
+            onNodeWithTag(LOADING_DIALOG).assertIsDisplayed()
         }
     }
 }
