@@ -9,8 +9,7 @@ import life.league.challenge.kotlin.api.HttpUsersRepository
 
 class MainActivityViewModel(
     private val repository: HttpUsersRepository,
-    private val encodedCredentials: String,
-    appDispatchers: AppDispatchers = AppDispatchers()
+    private val encodedCredentials: String
 ) : ViewModel() {
 
    // private val coroutineScope = viewModelScope + coroutineContext.IO
