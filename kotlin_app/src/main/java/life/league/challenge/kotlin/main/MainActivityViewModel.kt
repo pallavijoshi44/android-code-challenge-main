@@ -24,6 +24,7 @@ class MainActivityViewModel(
                 val x = repository.fetchUserDetails(encodedCredentials)
                 _uiState.value = UiState.LoggedIn
             } catch (t: Throwable) {
+                t.printStackTrace()
                 _uiState.value = UiState.Error
             }
         }
