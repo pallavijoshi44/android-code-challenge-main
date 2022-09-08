@@ -36,6 +36,7 @@ class HttpUsersRepository(
                     )
                 }
             }
+            //custom exception to show different error to user if no posts are found
             if (userDetails.isEmpty()) throw NoPostsFoundException()
             userDetails
         }
