@@ -4,7 +4,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import life.league.challenge.kotlin.main.MainActivityViewModel
+import life.league.challenge.kotlin.main.composable.ERROR_TEXT_MESSAGE
 import life.league.challenge.kotlin.main.composable.LOADING_DIALOG
 import life.league.challenge.kotlin.main.composable.MainScreen
 import life.league.challenge.kotlin.main.theme.AppTheme
@@ -45,6 +47,18 @@ class MainScreenKtTest {
                 }
             }
             onNodeWithTag(LOADING_DIALOG).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun displayErrorScreen_WhenUIStateIsError() {
+        with(composeTestRule) {
+            setContent {
+                AppTheme {
+                    MainScreen(uiState = MainActivityViewModel.UIState.Error)
+                }
+            }
+            onNodeWithText(ERROR_TEXT_MESSAGE).assertIsDisplayed()
         }
     }
 }

@@ -33,9 +33,8 @@ fun MainScreen(uiState: MainActivityViewModel.UIState) {
             }
         }
         MainActivityViewModel.UIState.Loading -> LoadingDialog()
-        MainActivityViewModel.UIState.Error -> TODO()
+        MainActivityViewModel.UIState.Error -> ErrorScreen()
     }
-
 }
 
 @Composable
