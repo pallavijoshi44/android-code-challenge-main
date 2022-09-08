@@ -32,7 +32,7 @@ class HttpUsersRepositoryTest {
         coEvery { loginRepository.login(any()) } returns Account(credentials)
         coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
 
-        repository.fetchUserDetails(credentials)
+        repository.fetchUserDetails(credentials, userId)
 
         coVerify { api.fetchUsers(credentials) }
     }
@@ -43,7 +43,7 @@ class HttpUsersRepositoryTest {
         coEvery { loginRepository.login(any()) } returns Account(credentials)
         coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
 
-        repository.fetchUserDetails(credentials)
+        repository.fetchUserDetails(credentials, userId)
 
         coVerify { api.fetchUserPosts(credentials, userId) }
     }
@@ -54,7 +54,7 @@ class HttpUsersRepositoryTest {
         coEvery { api.fetchUserPosts(any(), any()) } returns listOf(aPost)
         coEvery { loginRepository.login(any()) } returns Account(credentials)
 
-        val result = repository.fetchUserDetails(credentials)
+        val result = repository.fetchUserDetails(credentials, userId)
 
         val expectedListOfUserDetails = listOf(UserDetails(avatar, username, title, description))
         assertThat(result, `is`(expectedListOfUserDetails))

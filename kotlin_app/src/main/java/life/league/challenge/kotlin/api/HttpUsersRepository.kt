@@ -7,17 +7,21 @@ import life.league.challenge.kotlin.model.User
 import life.league.challenge.kotlin.model.UserDetails
 
 class HttpUsersRepository(
-        private val httpLoginRepository: HttpLoginRepository,
-        private val api: Api) {
+    private val httpLoginRepository: HttpLoginRepository,
+    private val api: Api
+) {
 
-    suspend fun fetchUserDetails(credentials: String): List<UserDetails> {
-        val userDetails = mutableListOf<UserDetails>()
+    suspend fun fetchUserDetails(credentials: String, id: Int): List<UserDetails> {
         val users = fetchUsers(credentials)
-        users.forEach { user ->
-            val posts = fetchPosts(credentials, user.id)
-            posts.forEach { post ->
-                userDetails.add(UserDetails(user.avatar, user.username, post.title, post.description))
-            }
+        val posts = fetchPosts(credentials, id)
+        val user: User? = users.find { user -> user.id == id }
+        val userDetails: List<UserDetails> = posts.map { post ->
+            UserDetails(
+                user?.avatar,
+                user?.username ?: "",
+                post.title,
+                post.description
+            )
         }
         return userDetails
     }
