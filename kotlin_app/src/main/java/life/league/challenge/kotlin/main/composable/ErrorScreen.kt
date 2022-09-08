@@ -13,10 +13,10 @@ const val ERROR_TEXT_MESSAGE = "An Error occurred! Please try again later."
 @Composable
 fun ErrorScreen() {
     Text(
-        color = Color.White,
+        color = Color.Black,
         text = ERROR_TEXT_MESSAGE,
         fontSize = 16.sp,
         modifier = Modifier
-            .padding(start = 12.dp)
+            .padding(20.dp)
     )
 }
