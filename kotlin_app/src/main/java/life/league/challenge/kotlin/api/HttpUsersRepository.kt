@@ -13,21 +13,32 @@ class HttpUsersRepository(
     private val api: Api
 ) {
 
-    suspend fun fetchUserDetails(credentials: String) = Either.catch {
-        val account = httpLoginRepository.login(credentials).bind()
-        val users = fetchUsers(account.apiKey).bind()
-        val posts = fetchPosts(account.apiKey).bind()
-        val userDetails: List<UserDetails> = posts.map { post ->
-            val user: User? = users.find { user -> user.id == post.userId }
-            UserDetails(
-                user?.avatar,
-                user?.name ?: "",
-                post.title,
-                post.description
-            )
+    suspend fun fetchUserDetails(credentials: String): Either<Throwable, List<UserDetails>> =
+        Either.catch {
+            val userDetails = mutableListOf<UserDetails>()
+            //fetch api key to login
+            val account = httpLoginRepository.login(credentials).bind()
+            // fetch all users
+            val users = fetchUsers(account.apiKey).bind()
+            // fetch all posts
+            val posts = fetchPosts(account.apiKey).bind()
+            // find user corresponding to the post with below logic and create UserDetails list
+            posts.forEach { post ->
+                val user = users.find { user -> user.id == post.userId }
+                user?.let {
+                    userDetails.add(
+                        UserDetails(
+                            user.avatar,
+                            user.name,
+                            post.title,
+                            post.description
+                        )
+                    )
+                }
+            }
+            if (userDetails.isEmpty()) throw NoPostsFoundException()
+            userDetails
         }
-        userDetails
-    }
 
     private suspend fun fetchUsers(apiKey: String?): Either<Throwable, List<User>> = Either.catch {
         withContext(Dispatchers.IO) {
